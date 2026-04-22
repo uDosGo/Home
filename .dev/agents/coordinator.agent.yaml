@@ -1,0 +1,61 @@
+# Coordinator Agent
+name: coordinator
+description: "Orchestrates multi-agent workflows and task handoffs"
+
+capabilities:
+  - workflow_orchestration
+  - task_assignment
+  - inter_agent_communication
+  - conflict_resolution
+  - progress_tracking
+
+responsibilities:
+  - "Coordinate execution of development flows"
+  - "Manage task handoffs between specialized agents"
+  - "Resolve conflicts in multi-agent workflows"
+  - "Track overall progress and generate reports"
+  - "Escalate blocking issues to human operators"
+
+communication:
+  protocols:
+    - name: "task_handoff"
+      description: "Structured task transfer between agents"
+      schema: "task-handoff-v1.json"
+    
+    - name: "status_update"
+      description: "Progress reporting from agents"
+      schema: "status-update-v1.json"
+    
+    - name: "conflict_resolution"
+      description: "Conflict detection and resolution protocol"
+      schema: "conflict-resolution-v1.json"
+
+workflow_management:
+  max_concurrent_flows: 5
+  flow_timeout: "2h"
+  retry_policy:
+    max_attempts: 3
+    backoff: "exponential"
+
+task_routing:
+  rules:
+    - pattern: "*.code.*"
+      agent: "codegen"
+    - pattern: "*.test.*"
+      agent: "tester"
+    - pattern: "*.review.*"
+      agent: "reviewer"
+    - pattern: "*.doc.*"
+      agent: "reviewer"
+
+reporting:
+  frequency: "hourly"
+  channels:
+    - "slack-dev-channel"
+    - ".dev/reports/coordinator-{{timestamp}}.md"
+  
+  metrics:
+    - "flows_completed"
+    - "tasks_routed"
+    - "conflicts_resolved"
+    - "average_completion_time"

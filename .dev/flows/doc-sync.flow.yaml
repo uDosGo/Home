@@ -1,0 +1,64 @@
+# Documentation Sync Flow
+name: doc-sync
+description: "Synchronize documentation between v4 roadmap and .dev system"
+
+steps:
+  - name: "Extract Roadmap Data"
+    agent: "reviewer"
+    actions:
+      - "Parse v0/docs/ROADMAP-V4.md"
+      - "Extract track information"
+      - "Identify changes since last sync"
+    outputs:
+      - ".dev/reports/roadmap-changes-{{timestamp}}.json"
+
+  - name: "Update Sync Mapping"
+    agent: "codegen"
+    actions:
+      - "Update .dev/roadmap/v4-sync.yaml"
+      - "Create new epic files for new tracks"
+      - "Update existing epic files"
+    outputs:
+      - ".dev/roadmap/v4-sync.yaml"
+      - ".dev/tasks/epics/*"
+
+  - name: "Update Task Status"
+    agent: "codegen"
+    actions:
+      - "Sync task status from epics to backlog"
+      - "Update task assignments"
+      - "Generate task mapping report"
+    outputs:
+      - ".dev/reports/task-sync-report-{{timestamp}}.md"
+
+  - name: "Generate Sync Report"
+    agent: "reviewer"
+    actions:
+      - "Create synchronization summary"
+      - "Identify conflicts or discrepancies"
+      - "Generate alignment metrics"
+    outputs:
+      - ".dev/reports/doc-sync-report-{{timestamp}}.md"
+
+  - name: "Notify Team"
+    agent: "reviewer"
+    actions:
+      - "Send sync completion notification"
+      - "Highlight any manual interventions needed"
+    outputs:
+      - "Slack notification"
+      - "Email summary to dev leads"
+
+triggers:
+  - event: "schedule"
+    schedule: "0 8 * * 1-5"  # Weekdays at 8 AM
+  - event: "manual"
+    command: "dev flow run doc-sync"
+  - event: "file_change"
+    files: ["v0/docs/ROADMAP-V4.md"]
+
+notifications:
+  - channel: "slack-dev-channel"
+    events: ["completion", "conflict_detected"]
+  - channel: "email-doc-team"
+    events: ["completion"]

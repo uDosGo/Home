@@ -1,0 +1,215 @@
+version: '3.8'
+
+# uHOME Server Docker Compose
+# Quick-start deployment for development and testing
+#
+# Usage:
+#   docker-compose up -d
+#   # Wait 10 seconds for service to stabilize
+#   curl http://localhost:7890/api/health
+#
+# This compose file sets up:
+#   - uHOME Server (main service, Python FastAPI)
+#   - Home Assistant (optional, for integration testing)
+#   - Jellyfin (optional, for media server testing)
+#
+# For production use, consider:
+#   - Separate persistent volumes for configs and registries
+#   - Environment-based secrets (don't hardcode passwords)
+#   - Health checks on all services
+#   - Resource limits to prevent runaway containers
+#   - Network isolation and firewall rules
+#
+# Documentation: docs/DEPLOYMENT-GUIDE.md
+
+services:
+  # Main uHOME Server service
+  uhome-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uhome-server
+    ports:
+      # REST API port
+      - "7890:7890"
+      # Optional: Sonic presentation port (reserved for future)
+      # - "7891:7891"
+    volumes:
+      # Workspace (configs, registries, library index)
+      # Change to named volume for production:
+      # uhome-workspace:
+      - ./workspace:/home/uhome/.workspace
+      
+      # Example: Mount local drives as library storage
+      # Uncomment and adjust paths to your system:
+      # - /media/library:/media/library
+      # - /mnt/nas-storage:/mnt/nas-storage
+    
+    environment:
+      # Python logging level: DEBUG, INFO, WARNING, ERROR
+      LOG_LEVEL: INFO
+      
+      # Node identity (hostname for multi-node deployments)
+      # Change for each node in a cluster
+      NODE_HOSTNAME: uhome-primary-dev
+      
+      # Node role: primary, secondary, offline
+      NODE_ROLE: primary
+      
+      # Home Assistant bridge (optional)
+      HA_ENABLED: "false"
+      HA_URL: http://homeassistant:8123
+      HA_TOKEN: ""  # Set via environment or .env file
+      
+      # Jellyfin integration (optional)
+      JELLYFIN_ENABLED: "false"
+      JELLYFIN_URL: http://jellyfin:8096
+      JELLYFIN_API_KEY: ""  # Set via environment or .env file
+      
+      # Household API safety settings
+      HOUSEHOLD_BLOCKED_TERMS: "adult,xxx,porn,nsfw,explicit"
+      
+      # Container runtime (Docker in this case)
+      CONTAINER_RUNTIME: docker
+    
+    restart: unless-stopped
+    
+    # Health check (optional but recommended)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7890/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Logging configuration
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "3"
+        labels: "service=uhome-server"
+    
+    # Uncomment for development: keep container running even if main process fails
+    # stdin_open: true
+    # tty: true
+
+  # Home Assistant (optional, for integration testing)
+  # Uncomment to enable
+  # homeassistant:
+  #   image: ghcr.io/home-assistant/home-assistant:stable
+  #   container_name: homeassistant
+  #   ports:
+  #     - "8123:8123"
+  #   volumes:
+  #     - ./homeassistant-config:/config
+  #     - /etc/localtime:/etc/localtime:ro
+  #   environment:
+  #     TZ: UTC
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8123/"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # Jellyfin (optional, for media server testing)
+  # Uncomment to enable
+  # jellyfin:
+  #   image: jellyfin/jellyfin:latest
+  #   container_name: jellyfin
+  #   ports:
+  #     - "8096:8096"
+  #   volumes:
+  #     - ./jellyfin-config:/config
+  #     - ./jellyfin-cache:/cache
+  #     - /media/library:/media  # Mount media storage
+  #   environment:
+  #     TZ: UTC
+  #     JELLYFIN_PublishedServerUrl: http://localhost:8096
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8096/System/Info"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+# Named volumes (uncomment for production)
+# volumes:
+#   uhome-workspace:
+#     driver: local
+#   homeassistant-config:
+#   jellyfin-config:
+#   jellyfin-cache:
+
+# Custom network (optional)
+# networks:
+#   uhome-net:
+#     driver: bridge
+#
+# Then add `networks: [uhome-net]` to each service
+
+# Post-startup validation script (run after compose up)
+# 
+# Scripts to run after deployment:
+# 
+# 1. Verify service is running
+#    curl http://localhost:7890/api/health | jq .
+# 
+# 2. Check registries are loaded
+#    curl http://localhost:7890/api/debug/registries | jq '.node_registry | length'
+# 
+# 3. Test browse endpoint
+#    curl "http://localhost:7890/api/household/browse?q=test" | jq .
+# 
+# 4. View logs
+#    docker-compose logs -f uhome-server
+# 
+# 5. Stop services
+#    docker-compose down
+# 
+# 6. Backup workspace before deletion
+#    cp -r workspace workspace.backup
+#    docker-compose down -v
+
+# Environment file template (.env file for sensitive values)
+#
+# Create a .env file in the same directory as docker-compose.yml:
+# 
+# LOG_LEVEL=INFO
+# NODE_HOSTNAME=uhome-primary
+# HA_ENABLED=true
+# HA_URL=http://homeassistant:8123
+# HA_TOKEN=eyJhbGciOi... (your HA token here)
+# JELLYFIN_ENABLED=true
+# JELLYFIN_URL=http://jellyfin:8096
+# JELLYFIN_API_KEY=12345abcdef... (your Jellyfin key here)
+# 
+# Then reference in compose file:
+#   environment:
+#     LOG_LEVEL: ${LOG_LEVEL}
+#     HA_TOKEN: ${HA_TOKEN}
+
+# Multi-node compose example (for testing multi-node setup)
+# 
+# Create additional compose files: docker-compose.secondary.yml
+# 
+# version: '3.8'
+# services:
+#   uhome-server-secondary:
+#     build: .
+#     container_name: uhome-server-secondary
+#     ports:
+#       - "7891:7890"  # Different external port
+#     environment:
+#       NODE_HOSTNAME: uhome-secondary-dev
+#       NODE_ROLE: secondary
+#       # ... other config ...
+# 
+# Then start both:
+#   docker-compose up -d
+#   docker-compose -f docker-compose.secondary.yml up -d
+# 
+# Verify cluster:
+#   curl http://localhost:7890/api/debug/registries | jq .node_registry
+#   curl http://localhost:7891/api/debug/registries | jq .node_registry

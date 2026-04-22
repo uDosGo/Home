@@ -1,0 +1,75 @@
+# uHomeNest v4 Roadmap Synchronization
+# This file maps v4 roadmap tracks to .dev system components
+
+v4_roadmap:
+  source: "v0/docs/ROADMAP-V4.md"
+  last_sync: "2024-04-19"
+  next_sync: "2024-04-20"
+  sync_status: "completed"
+  epics_created: 6
+  epics_pending: 0
+  alignment_score: 100
+  last_full_sync: "2024-04-19"
+  next_full_sync: "2024-04-20"
+  tracks:
+    - name: "Runtime hardening"
+      dev_path: ".dev/tasks/epics/runtime-hardening"
+      owner: "infrastructure-team"
+      status: "ongoing"
+      tasks:
+        - "CI pipeline improvements"
+        - "Dependency management"
+        - "Health checks for integrations"
+    
+    - name: "Media & jobs"
+      dev_path: ".dev/tasks/epics/media-jobs"
+      owner: "media-team"
+      status: "in-progress"
+      tasks:
+        - "DVR durability improvements"
+        - "Job queue implementation"
+        - "Jellyfin integration hardening"
+        - "Library path model"
+    
+    - name: "Decentralized LAN"
+      dev_path: ".dev/tasks/epics/lan-topology.md"
+      owner: "network-team"
+      status: "largely-in-place"
+      tasks:
+        - "Node/storage topology"
+        - "Partial availability handling"
+        - "Failover/election model"
+    
+    - name: "Sonic & host profiles"
+      dev_path: ".dev/tasks/epics/sonic-profiles.md"
+      owner: "deployment-team"
+      status: "largely-in-place"
+      tasks:
+        - "Bundle contracts"
+        - "Standalone profiles"
+        - "Dual-boot profiles"
+    
+    - name: "Living-room & clients"
+      dev_path: ".dev/tasks/epics/client-api.md"
+      owner: "client-team"
+      status: "active"
+      tasks:
+        - "Stable API contracts"
+        - "Launcher/session semantics"
+        - "Playback routes vs HA handlers"
+    
+    - name: "Operational maturity"
+      dev_path: ".dev/tasks/epics/operations.md"
+      owner: "ops-team"
+      status: "largely-in-place"
+      tasks:
+        - "Runbooks"
+        - "Backup/restore"
+        - "Observability"
+
+sync_rules:
+  - frequency: "daily"
+  - conflict_resolution: "dev-takes-precedence"
+  - notification_channel: "slack-dev-channel"
+  - auto_create_epics: true
+  - auto_update_status: true

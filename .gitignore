@@ -1,0 +1,80 @@
+# OS / editors
+.DS_Store
+**/.DS_Store
+.idea/
+.vscode/
+DerivedData/
+.gradle/
+
+# Local scratch (monorepo root)
+.local/
+.compost/
+
+# Secrets / env
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Python
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+src/uhome_server.egg-info/
+
+# Virtualenvs
+.venv/
+venv/
+**/.venv/
+**/venv/
+
+# JS / build
+node_modules/
+**/node_modules/
+thin-prose-build/node_modules/
+**/.build/
+dist/
+build/
+coverage/
+**/dist/
+*.tsbuildinfo
+
+# Repo-specific generated / local-only trees
+memory/
+docs/.compost/
+
+# Runtime / local state
+logs/
+**/logs/
+*.log
+*.out
+*.err
+*.pid
+*.pid.lock
+tmp/
+**/tmp/
+.tmp/
+**/.tmp/
+runtime/
+**/runtime/
+.runtime/
+state/
+**/state/
+.state/
+*.sqlite
+*.sqlite3
+*.db
+*.db-*
+**/.media-index.json
+
+# Packaging artifacts (generated)
+*.she
+*.delta
+*.sig

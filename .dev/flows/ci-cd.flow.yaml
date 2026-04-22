@@ -1,0 +1,66 @@
+# CI/CD Flow
+name: ci-cd
+description: "Continuous Integration and Deployment workflow"
+
+steps:
+  - name: "Code Analysis"
+    agent: "codegen"
+    actions:
+      - "Run static code analysis"
+      - "Check coding standards"
+      - "Generate code quality report"
+    outputs:
+      - ".dev/reports/code-quality-{{timestamp}}.md"
+
+  - name: "Test Execution"
+    agent: "tester"
+    actions:
+      - "Run unit tests"
+      - "Run integration tests"
+      - "Run end-to-end tests"
+      - "Generate test coverage report"
+    outputs:
+      - ".dev/reports/test-coverage-{{timestamp}}.md"
+
+  - name: "Build"
+    agent: "codegen"
+    actions:
+      - "Build application"
+      - "Create artifacts"
+      - "Generate build report"
+    outputs:
+      - ".dev/reports/build-report-{{timestamp}}.md"
+      - "dist/artifacts/"
+
+  - name: "Security Scan"
+    agent: "reviewer"
+    actions:
+      - "Dependency vulnerability scan"
+      - "Container security scan"
+      - "Generate security report"
+    outputs:
+      - ".dev/reports/security-scan-{{timestamp}}.md"
+
+  - name: "Deployment"
+    agent: "reviewer"
+    actions:
+      - "Deploy to staging"
+      - "Run smoke tests"
+      - "Deploy to production (manual approval)"
+      - "Generate deployment report"
+    outputs:
+      - ".dev/reports/deployment-report-{{timestamp}}.md"
+
+triggers:
+  - event: "push"
+    branches: ["main", "develop"]
+  - event: "pull_request"
+    branches: ["main"]
+  - event: "manual"
+    command: "dev flow run ci-cd"
+
+notifications:
+  - channel: "slack-dev-channel"
+    events: ["failure", "success"]
+  - channel: "email-dev-team"
+    events: ["failure"]

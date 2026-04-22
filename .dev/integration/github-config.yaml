@@ -1,0 +1,38 @@
+# GitHub Integration Configuration
+# This file contains sensitive information - do not commit to public repositories
+
+github_token: "REPLACE_WITH_YOUR_GITHUB_TOKEN"
+default_repo: "fredporter/uHomeNest"
+sync_interval: 3600  # 1 hour in seconds
+max_retries: 3
+timeout: 30
+labels:
+  epic-linked: "epic-linked"
+  dev-system: "dev-system"
+  automated: "automated"
+
+# Advanced settings
+rate_limit_warning: 100
+webhook_secret: "optional-webhook-secret-for-validation"
+enable_webhooks: false
+sync_on_startup: true
+
+# Webhook configuration
+webhook:
+  enabled: false
+  secret: "optional-webhook-secret-for-validation"
+  port: 8080
+  endpoint: "/webhook/github"
+  
+# Integration settings
+integration:
+  auto_sync_interval: 3600  # 1 hour in seconds
+  max_sync_items: 100
+  conflict_resolution: "dev-wins"
+  
+# Logging settings
+logging:
+  level: "INFO"
+  file: ".dev/integration/github-integration.log"
+  max_size: 1048576  # 1MB
+  backup_count: 5
