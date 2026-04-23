@@ -1,0 +1,7 @@
+# USB installer policy
+name: installer-usb
+match:
+  - ENV{ID_FS_LABEL}=="UHOME_INSTALL"
+actions:
+  - symlink: /dev/uhome/installer
+  - trigger: uhome-auto-install.service

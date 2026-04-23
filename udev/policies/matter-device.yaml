@@ -1,0 +1,8 @@
+# Matter device policy
+name: matter-device
+match:
+  - ATTRS{idVendor}=="10c4"
+  - ATTRS{idProduct}=="ea60"
+actions:
+  - symlink: /dev/uhome/matter/$kernel
+  - notify: matter-device-added

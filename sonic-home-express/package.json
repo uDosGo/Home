@@ -1,0 +1,41 @@
+{
+  "name": "sonic-home-express",
+  "version": "1.1.0",
+  "description": "Sonic-Home-Express CLI for uHomeNest - Integrated with Sonic-Screwdriver v1.1.0",
+  "main": "dist/sonic-home-main.js",
+  "type": "module",
+  "bin": {
+    "sonic-home": "./dist/sonic-home-main.js"
+  },
+  "scripts": {
+    "build": "tsc && cp package.json dist/",
+    "dev": "tsc --watch",
+    "start": "node dist/sonic-home-main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "chalk": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "uhomenest",
+    "sonic-screwdriver",
+    "home-automation",
+    "cli",
+    "container-management"
+  ],
+  "author": "uHomeNest Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fredporter/uHomeNest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fredporter/uHomeNest/issues"
+  },
+  "homepage": "https://github.com/fredporter/uHomeNest#readme"
+}

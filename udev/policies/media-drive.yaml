@@ -1,0 +1,9 @@
+# Media drive policy
+name: media-drive
+match:
+  - ENV{ID_FS_LABEL}=~"MEDIA.*"
+  - DEVTYPE=="partition"
+actions:
+  - symlink: /dev/uhome/media/$env{ID_FS_LABEL}
+  - mount: /media/$env{ID_FS_LABEL}
+  - trigger: uhome-media-scan@$env{ID_FS_LABEL}.service
