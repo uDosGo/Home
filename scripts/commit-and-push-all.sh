@@ -48,9 +48,11 @@ commit_and_push() {
             git commit -m "Update: $(date +'%Y-%m-%d %H:%M:%S')"
             
             # Push to remote
-            git push origin "$branch"
-            
-            echo -e "${GREEN}✓${NC} $repo_name: Committed and pushed successfully"
+            if git push origin "$branch" 2>/dev/null; then
+                echo -e "${GREEN}✓${NC} $repo_name: Committed and pushed successfully"
+            else
+                echo -e "${YELLOW}?${NC} $repo_name: Commit successful, but push failed"
+            fi
         else
             echo -e "${YELLOW}?${NC} $repo_name: No changes to commit"
         fi
